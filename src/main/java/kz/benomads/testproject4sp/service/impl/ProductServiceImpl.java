@@ -1,4 +1,6 @@
 package kz.benomads.testproject4sp.service.impl;
 
-public class ProductServiceImpl {
+import kz.benomads.testproject4sp.service.ProductService;
+
+public class ProductServiceImpl implements ProductService {
 }

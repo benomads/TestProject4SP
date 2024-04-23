@@ -17,7 +17,7 @@ import java.util.List;
 @Builder
 public class Product extends BaseEntity {
 
-    private String name;
+    private String title;
     private String description;
     private Double price;
     private Integer quantity;
