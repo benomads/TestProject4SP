@@ -1,13 +1,12 @@
 package kz.benomads.testproject4sp.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import java.util.List;
 @Entity
@@ -23,6 +22,10 @@ public class User extends BaseEntity {
     private String password;
     private String email;
     private String phoneNumber;
+    private String avatarUrl;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany
     private List<Order> orders;
