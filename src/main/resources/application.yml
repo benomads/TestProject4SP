@@ -1,0 +1,10 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://localhost:5433/SPTestProject
+    username: postgres
+    password: qwerty
+    driver-class-name: org.postgresql.Driver
