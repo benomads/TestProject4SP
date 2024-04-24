@@ -61,9 +61,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(UserDto userDto) {
-        User user = userRepository.findAllByUsername(userDto.getUsername())
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (!userRepository.existsByUsername(userDto.getUsername()))
+            throw new IllegalArgumentException("User not found");
 
+
+        User user = User.builder()
+            .fullName(userDto.getFullName())
+            .username(userDto.getUsername())
+            .password(passwordEncoder.encode(userDto.getPassword()))
+            .avatarUrl(userDto.getAvatarUrl())
+            .role(Role.valueOf("USER"))
+            .build();
 
         userRepository.save(user);
 

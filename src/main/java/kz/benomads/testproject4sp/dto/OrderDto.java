@@ -11,10 +11,11 @@ import lombok.NoArgsConstructor;
 @Builder
 public class OrderDto {
 
+    private Long id;
     private Long userId;
     private Long productId;
     private Integer quantity;
-    private Double totalAmount;
+    private Double totalPrice;
     private String address;
     private String phoneNumber;
 }
