@@ -1,23 +1,19 @@
-package kz.benomads.testproject4sp.model;
+package kz.benomads.testproject4sp.dto;
 
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-@Entity
-@Table(name = "users")
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User extends BaseEntity {
+public class UserRegistrationRequest {
 
     @NotBlank(message = "Full name is required")
     private String fullName;
@@ -29,6 +25,9 @@ public class User extends BaseEntity {
     @Size(min = 8, message = "Password should have at least 8 characters")
     private String password;
 
+    @NotBlank(message = "Password confirmation is required")
+    private String matchingPassword;
+
     private String avatarUrl;
 
     @Email(message = "Email should be valid")
@@ -37,17 +36,5 @@ public class User extends BaseEntity {
 
     @NotBlank(message = "Phone number is required")
     private String phoneNumber;
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
-    @OneToMany
-    private List<Order> orders;
-    @OneToMany(mappedBy = "users",
-               cascade = CascadeType.ALL,
-               orphanRemoval = true)
-
-    private List<Product> products;
-
 
 }

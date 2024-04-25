@@ -1,8 +1,14 @@
 package kz.benomads.testproject4sp.service.impl;
 
+import kz.benomads.testproject4sp.dao.UserRepository;
+import kz.benomads.testproject4sp.exception.ProductNotFoundException;
+import kz.benomads.testproject4sp.exception.UserNotFoundException;
+import kz.benomads.testproject4sp.mapper.ProductDtoMapper;
 import kz.benomads.testproject4sp.dao.ProductRepository;
 import kz.benomads.testproject4sp.dto.ProductDto;
+import kz.benomads.testproject4sp.model.Category;
 import kz.benomads.testproject4sp.model.Product;
+import kz.benomads.testproject4sp.model.User;
 import kz.benomads.testproject4sp.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,14 +20,19 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductDtoMapper productDtoMapper;
+    private final UserRepository userRepository;
 
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository,
+                              ProductDtoMapper productDtoMapper, UserRepository userRepository) {
         this.productRepository = productRepository;
+        this.productDtoMapper = productDtoMapper;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public ProductDto createProduct(ProductDto productDto) {
+    public ProductDto createProduct(ProductDto productDto, Long userId) {
         if (productDto == null) {
             throw new IllegalArgumentException("ProductDto cannot be null");
         }
@@ -35,18 +46,27 @@ public class ProductServiceImpl implements ProductService {
         if (productDto.getPrice() == null) {
             throw new IllegalArgumentException("Product price cannot be null");
         }
+        // Check if the user exists
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException(
+                String.format("User id=%d not found", userId)));
 
         Product product = Product.builder()
-                .title(productDto.getTitle())
-                .description(productDto.getDescription())
-                .imageUrl(productDto.getImageUrl())
-                .category(productDto.getCategory())
-                .quantity(productDto.getQuantity())
-                .price(productDto.getPrice())
-                .build();
+            .title(productDto.getTitle())
+            .description(productDto.getDescription())
+            .imageUrl(productDto.getImageUrl())
+            .category(productDto.getCategory())
+            .quantity(productDto.getQuantity())
+            .price(productDto.getPrice())
+            .users(user) // Set the user
+            .build();
         productRepository.save(product);
 
-        return productDto;
+        // Add the product to the user's list of products
+        user.getProducts().add(product);
+        userRepository.save(user);
+
+        return productDtoMapper.apply(product);
     }
 
     @Override
@@ -55,65 +75,75 @@ public class ProductServiceImpl implements ProductService {
             throw new IllegalArgumentException("Product id cannot be null");
         }
         Product product = productRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+            .orElseThrow(() -> new ProductNotFoundException(
+                String.format("Product id=%d not found", id)));
 
-        return ProductDto.builder()
-            .id(product.getId())
-            .title(product.getTitle())
-            .description(product.getDescription())
-            .imageUrl(product.getImageUrl())
-            .category(product.getCategory())
-            .quantity(product.getQuantity())
-            .price(product.getPrice())
-            .build();
+        return productDtoMapper.apply(product);
     }
 
     @Override
     public List<ProductDto> getAllProducts() {
-        if (productRepository.findAll().isEmpty()) {
-            throw new IllegalArgumentException("No products found");
-        }
-        List<ProductDto> productDtoList = productRepository.findAll().stream()
-            .map(product -> ProductDto.builder()
-                .id(product.getId())
-                .title(product.getTitle())
-                .description(product.getDescription())
-                .imageUrl(product.getImageUrl())
-                .category(product.getCategory())
-                .quantity(product.getQuantity())
-                .price(product.getPrice())
-                .build())
-            .collect(Collectors.toList());
+        List<Product> products = productRepository.findAll();
 
-        return productDtoList;
+        if (products.isEmpty()) {
+            throw new ProductNotFoundException("No products found");
+        }
+
+        return products.stream()
+            .map(productDtoMapper)
+            .collect(Collectors.toList());
     }
 
     @Override
-    public ProductDto updateProduct(ProductDto productDto) {
-        if (productDto == null) {
-            throw new IllegalArgumentException("ProductDto cannot be null");
+    public List<ProductDto> getProductsByCategory(Category category) {
+        if (category == null || category.toString().isEmpty()) {
+            throw new IllegalArgumentException("Category cannot be null or empty");
         }
+
+        List<Product> products = productRepository.findAllProductsByCategory(category);
+
+        return products.stream()
+            .map(productDtoMapper)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public ProductDto updateProduct(Long id, ProductDto productDto) {
+        if (productDto == null || id == null) {
+            throw new IllegalArgumentException("ProductDto or Product Id cannot be null");
+        }
+
         Product product = productRepository.findById(productDto.getId())
-            .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+            .orElseThrow(() -> new ProductNotFoundException(
+                String.format("Product id=%d not found", id)));
 
-        product.setTitle(productDto.getTitle());
-        product.setDescription(productDto.getDescription());
-        product.setImageUrl(productDto.getImageUrl());
-        product.setCategory(productDto.getCategory());
-        product.setQuantity(productDto.getQuantity());
-        product.setPrice(productDto.getPrice());
+        Product checkedProduct = checkProductDtoFields(product, productDto);
 
-        Product updatedProduct = productRepository.save(product);
+        productRepository.save(checkedProduct);
 
-        return ProductDto.builder()
-            .id(updatedProduct.getId())
-            .title(updatedProduct.getTitle())
-            .description(updatedProduct.getDescription())
-            .imageUrl(updatedProduct.getImageUrl())
-            .category(updatedProduct.getCategory())
-            .quantity(updatedProduct.getQuantity())
-            .price(updatedProduct.getPrice())
-            .build();
+        return productDtoMapper.apply(checkedProduct);
+    }
+
+    private Product checkProductDtoFields(Product product, ProductDto productDto) {
+        if (productDto.getTitle() != null && !productDto.getTitle().isEmpty()) {
+            product.setTitle(productDto.getTitle());
+        }
+        if (productDto.getDescription() != null && !productDto.getDescription().isEmpty()) {
+            product.setDescription(productDto.getDescription());
+        }
+        if (productDto.getImageUrl() != null && !productDto.getImageUrl().isEmpty()) {
+            product.setImageUrl(productDto.getImageUrl());
+        }
+        if (productDto.getCategory() != null) {
+            product.setCategory(productDto.getCategory());
+        }
+        if (productDto.getQuantity() != null) {
+            product.setQuantity(productDto.getQuantity());
+        }
+        if (productDto.getPrice() != null) {
+            product.setPrice(productDto.getPrice());
+        }
+        return product;
     }
 
     @Override
@@ -122,7 +152,8 @@ public class ProductServiceImpl implements ProductService {
             throw new IllegalArgumentException("Product id cannot be null");
         }
         if (!productRepository.existsById(id)) {
-            throw new IllegalArgumentException("Product not found");
+            throw new ProductNotFoundException(
+                String.format("Product id=%d not found", id));
         }
         productRepository.deleteById(id);
 

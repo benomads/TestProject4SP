@@ -44,27 +44,3 @@ CREATE TABLE products
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
--- Data for table: users
-INSERT INTO users (id,
-                   created_at,
-                   full_name,
-                   username,
-                   password,
-                   avatar_url,
-                   email,
-                   phone_number,
-                   role)
-VALUES (1,
-        '2021-10-10 00:00:00',
-        'User Userov',
-        'user0001',
-        'password',
-        'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',
-        'userovski@gmail.com ',
-        '7777777777',
-        'USER');
-
-
-
-

@@ -7,9 +7,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findAllByProductCategory(Category product_category);
+
+    List<Order> findAll();
+
+    Optional<Order> findOrderById(Long id);
 }

@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,7 +20,6 @@ public class ProductDto {
     private Integer quantity;
     private String imageUrl;
     private Category category;
-    private List<Long> orderIds;
-    private Long userId;
+    private Long usersId;
 
 }
