@@ -16,6 +16,7 @@ public class GlobalExceptionHandler {
 
     private final HttpStatus httpNotFoundErrorStatus = HttpStatus.NOT_FOUND;
     private final HttpStatus httpFoundErrorStatus = HttpStatus.FOUND;
+    private final HttpStatus httpBadRequestErrorStatus = HttpStatus.BAD_REQUEST;
 
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<Object> handleProductNotFoundException(Exception ex, HttpServletRequest request) {
@@ -39,6 +40,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleOrderNotFoundException(Exception ex, HttpServletRequest request) {
         ApiException apiException = getApiException(ex, request, httpNotFoundErrorStatus);
         return new ResponseEntity<>(apiException, httpNotFoundErrorStatus);
+    }
+
+    @ExceptionHandler(NullValueException.class)
+    public ResponseEntity<Object> handleNullValueException(Exception ex, HttpServletRequest request) {
+        ApiException apiException = getApiException(ex, request, httpBadRequestErrorStatus);
+        return new ResponseEntity<>(apiException, httpBadRequestErrorStatus);
     }
 
 

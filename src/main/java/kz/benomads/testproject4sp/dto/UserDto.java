@@ -1,6 +1,5 @@
 package kz.benomads.testproject4sp.dto;
 
-import kz.benomads.testproject4sp.model.Category;
 import kz.benomads.testproject4sp.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +9,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserDto {
 
     private Long id;
@@ -23,25 +23,7 @@ public class UserDto {
     private List<Long> productIds;
 
 
-    public <R> UserDto(Long id,
-                       String fullName,
-                       String username,
-                       String avatarUrl,
-                       String email,
-                       String phoneNumber,
-                       Role role,
-                       List<Long> orderIds,
-                       List<Long> productIds) {
-        this.id = id;
-        this.fullName = fullName;
-        this.username = username;
-        this.avatarUrl = avatarUrl;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.role = role;
-        this.orderIds = (List<Long>) orderIds;
-        this.productIds = (List<Long>) productIds;
-    }
+
 
 
 }

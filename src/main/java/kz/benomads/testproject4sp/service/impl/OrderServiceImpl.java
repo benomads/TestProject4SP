@@ -1,5 +1,6 @@
 package kz.benomads.testproject4sp.service.impl;
 
+import kz.benomads.testproject4sp.exception.NullValueException;
 import kz.benomads.testproject4sp.exception.OrderNotFoundException;
 import kz.benomads.testproject4sp.mapper.OrderDtoMapper;
 import kz.benomads.testproject4sp.dao.OrderRepository;
@@ -39,7 +40,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto createOrder(OrderDto orderDto) {
         if (orderDto == null) {
-            throw new IllegalArgumentException("OrderDto cannot be null");
+            throw new NullValueException("OrderDto cannot be null");
         }
 
         Double calculateTotalPrice = calculateTotalPrice(orderDto.getProductId(),
@@ -70,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto getOrderById(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("Id cannot be null");
+            throw new NullValueException("Id cannot be null");
         }
 
         // Fetch Order by id
@@ -102,7 +103,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderDto> getOrdersByCategory(Category category) {
 
         if (category == null || category.toString().isEmpty()) {
-            throw new IllegalArgumentException(
+            throw new NullValueException(
                 String
                     .format("Category category=%s cannot be null or empty", category));
         }
@@ -118,7 +119,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto updateOrder(Long id, OrderDto orderDto) {
         if (orderDto == null || orderDto.getId() == null) {
-            throw new IllegalArgumentException(
+            throw new NullValueException(
                 String
                     .format("OrderDto or Order id=%d cannot be null", id));
         }
@@ -164,7 +165,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void deleteOrder(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("Id cannot be null");
+            throw new NullValueException("Id cannot be null");
         }
         if (!orderRepository.existsById(id)) {
             throw new OrderNotFoundException("No orders found");

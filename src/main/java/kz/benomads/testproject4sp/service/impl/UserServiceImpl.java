@@ -3,6 +3,7 @@ package kz.benomads.testproject4sp.service.impl;
 import kz.benomads.testproject4sp.dao.UserRepository;
 import kz.benomads.testproject4sp.dto.UserDto;
 import kz.benomads.testproject4sp.dto.UserRegistrationRequest;
+import kz.benomads.testproject4sp.exception.NullValueException;
 import kz.benomads.testproject4sp.exception.UserAlreadyExistsException;
 import kz.benomads.testproject4sp.exception.UserNotFoundException;
 import kz.benomads.testproject4sp.mapper.UserDtoMapper;
@@ -61,7 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserById(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("User id cannot be null");
+            throw new NullValueException("User id cannot be null");
         }
         User user = userRepository.findById(id)
             .orElseThrow(() -> new UserNotFoundException(
@@ -95,7 +96,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(Long id, UserDto userDto) {
         if (id == null) {
-            throw new IllegalArgumentException("User id cannot be null");
+            throw new NullValueException("User id cannot be null");
         }
 
         User user = userRepository.findById(id)
@@ -133,7 +134,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("User id cannot be null");
+            throw new NullValueException("User id cannot be null");
         }
         if (!userRepository.existsById(id)) {
             throw new UserNotFoundException(

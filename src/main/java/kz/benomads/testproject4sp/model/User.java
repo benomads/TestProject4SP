@@ -29,6 +29,7 @@ public class User extends BaseEntity {
     @Size(min = 8, message = "Password should have at least 8 characters")
     private String password;
 
+    @NotBlank(message = "Avatar URL is required")
     private String avatarUrl;
 
     @Email(message = "Email should be valid")

@@ -1,6 +1,7 @@
 package kz.benomads.testproject4sp.service.impl;
 
 import kz.benomads.testproject4sp.dao.UserRepository;
+import kz.benomads.testproject4sp.exception.NullValueException;
 import kz.benomads.testproject4sp.exception.ProductNotFoundException;
 import kz.benomads.testproject4sp.exception.UserNotFoundException;
 import kz.benomads.testproject4sp.mapper.ProductDtoMapper;
@@ -34,17 +35,17 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto createProduct(ProductDto productDto, Long userId) {
         if (productDto == null) {
-            throw new IllegalArgumentException("ProductDto cannot be null");
+            throw new NullValueException("ProductDto cannot be null");
         }
         // Check if the required fields are null or empty
         if (productDto.getTitle() == null || productDto.getTitle().isEmpty()) {
-            throw new IllegalArgumentException("Product name cannot be null or empty");
+            throw new NullValueException("Product name cannot be null or empty");
         }
         if (productDto.getDescription() == null || productDto.getDescription().isEmpty()) {
-            throw new IllegalArgumentException("Product description cannot be null or empty");
+            throw new NullValueException("Product description cannot be null or empty");
         }
         if (productDto.getPrice() == null) {
-            throw new IllegalArgumentException("Product price cannot be null");
+            throw new NullValueException("Product price cannot be null");
         }
         // Check if the user exists
         User user = userRepository.findById(userId)
@@ -72,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto getProductById(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("Product id cannot be null");
+            throw new NullValueException("Product id cannot be null");
         }
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new ProductNotFoundException(
@@ -97,7 +98,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDto> getProductsByCategory(Category category) {
         if (category == null || category.toString().isEmpty()) {
-            throw new IllegalArgumentException("Category cannot be null or empty");
+            throw new NullValueException("Category cannot be null or empty");
         }
 
         List<Product> products = productRepository.findAllProductsByCategory(category);
@@ -110,7 +111,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto updateProduct(Long id, ProductDto productDto) {
         if (productDto == null || id == null) {
-            throw new IllegalArgumentException("ProductDto or Product Id cannot be null");
+            throw new NullValueException("ProductDto or Product Id cannot be null");
         }
 
         Product product = productRepository.findById(productDto.getId())
@@ -149,7 +150,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProduct(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("Product id cannot be null");
+            throw new NullValueException("Product id cannot be null");
         }
         if (!productRepository.existsById(id)) {
             throw new ProductNotFoundException(
