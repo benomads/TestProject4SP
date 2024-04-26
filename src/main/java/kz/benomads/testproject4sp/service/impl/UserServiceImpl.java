@@ -2,7 +2,7 @@ package kz.benomads.testproject4sp.service.impl;
 
 import kz.benomads.testproject4sp.dao.UserRepository;
 import kz.benomads.testproject4sp.dto.UserDto;
-import kz.benomads.testproject4sp.dto.UserRegistrationRequest;
+import kz.benomads.testproject4sp.dto.UserDetail;
 import kz.benomads.testproject4sp.exception.NullValueException;
 import kz.benomads.testproject4sp.exception.UserAlreadyExistsException;
 import kz.benomads.testproject4sp.exception.UserNotFoundException;
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto register(UserRegistrationRequest userRequest) {
+    public UserDto register(UserDetail userRequest) {
         if (!Objects.equals(userRequest.getPassword(),
                             userRequest.getMatchingPassword())) {
             throw new IllegalArgumentException("Passwords do not match");

@@ -13,7 +13,7 @@ import jakarta.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserRegistrationRequest {
+public class UserDetail {
 
     @NotBlank(message = "Full name is required")
     private String fullName;
