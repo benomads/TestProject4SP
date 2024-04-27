@@ -9,7 +9,7 @@ import kz.benomads.testproject4sp.dao.ProductRepository;
 import kz.benomads.testproject4sp.dto.ProductDto;
 import kz.benomads.testproject4sp.model.Category;
 import kz.benomads.testproject4sp.model.Product;
-import kz.benomads.testproject4sp.model.User;
+import kz.benomads.testproject4sp.model.UserEntity;
 import kz.benomads.testproject4sp.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,9 +48,9 @@ public class ProductServiceImpl implements ProductService {
             throw new NullValueException("Product price cannot be null");
         }
         // Check if the user exists
-        User user = userRepository.findById(userId)
+        UserEntity user = userRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException(
-                String.format("User id=%d not found", userId)));
+                String.format("UserEntity id=%d not found", userId)));
 
         Product product = Product.builder()
             .title(productDto.getTitle())

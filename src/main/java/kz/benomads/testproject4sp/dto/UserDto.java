@@ -18,7 +18,7 @@ public class UserDto {
     private String avatarUrl;
     private String email;
     private String phoneNumber;
-    private Role role;
+    private List<Role> role;
     private List<Long> orderIds;
     private List<Long> productIds;
 

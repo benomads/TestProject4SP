@@ -4,7 +4,7 @@ import kz.benomads.testproject4sp.dto.OrderDto;
 import kz.benomads.testproject4sp.mapper.OrderDtoMapper;
 import kz.benomads.testproject4sp.model.Order;
 import kz.benomads.testproject4sp.model.Product;
-import kz.benomads.testproject4sp.model.User;
+import kz.benomads.testproject4sp.model.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -31,7 +31,7 @@ class TestProject4SpApplicationTests {
         order.setTotalPrice(1.0);
         order.setAddress("address");
         order.setPhoneNumber("1234567890");
-        User user = new User();
+        UserEntity user = new UserEntity();
         user.setId(1L);
         order.setUser(user);
         Product product = new Product();

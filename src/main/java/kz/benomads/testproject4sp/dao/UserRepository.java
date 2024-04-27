@@ -1,19 +1,20 @@
 package kz.benomads.testproject4sp.dao;
 
-import kz.benomads.testproject4sp.model.User;
+import kz.benomads.testproject4sp.model.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     boolean existsByUsername(String username);
-    Optional<User> findAllByUsername(String username);
+    Optional<UserEntity> findAllByUsername(String username);
 
 
-    User findUserById(Long userId);
+    UserEntity findUserById(Long userId);
     void deleteUserById(Long userId);
+
+    Optional<UserEntity> findByUsername(String username);
 }

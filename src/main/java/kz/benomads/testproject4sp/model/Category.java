@@ -1,10 +1,17 @@
 package kz.benomads.testproject4sp.model;
 
-public enum Category {
-    ELECTRONICS,
-    CLOTHES,
-    FOOD,
-    BOOKS,
-    SPORT,
-    OTHER
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
+@Entity
+@Table(name = "categories")
+public class Category {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    private String categoryName;
 }

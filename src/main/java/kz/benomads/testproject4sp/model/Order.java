@@ -2,17 +2,14 @@ package kz.benomads.testproject4sp.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "orders")
 @Data
@@ -22,8 +19,8 @@ import lombok.NoArgsConstructor;
 public class Order extends BaseEntity {
 
     @ManyToOne
-    @NotNull(message = "User is required")
-    private User user;
+    @NotNull(message = "UserEntity is required")
+    private UserEntity user;
 
     @ManyToOne
     @NotNull(message = "Product is required")

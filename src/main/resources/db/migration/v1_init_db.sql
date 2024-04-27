@@ -1,4 +1,4 @@
--- User table
+-- UserEntity table
 CREATE TABLE users
 (
     id           BIGSERIAL NOT NULL,
@@ -57,7 +57,7 @@ INSERT INTO users (id,
                    role)
 VALUES (1,
         '2021-10-10 00:00:00',
-        'User Userov',
+        'UserEntity Userov',
         'user0001',
         'password',
         'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',

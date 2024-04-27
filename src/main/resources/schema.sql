@@ -1,4 +1,4 @@
--- User table
+-- UserEntity table
 CREATE TABLE users
 (
     id           BIGSERIAL NOT NULL,
