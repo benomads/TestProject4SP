@@ -20,13 +20,8 @@ public class UserDtoMapper implements Function<UserEntity, UserDto> {
             user.getAvatarUrl(),
             user.getEmail(),
             user.getPhoneNumber(),
-            user.getRoles(),
-            user.getOrders().stream()
-                .map(Order::getId)
-                .collect(Collectors.toList()),
-            user.getProducts().stream()
-                .map(Product::getId)
-                .collect(Collectors.toList())
+            user.getRoles()
         );
+
     }
 }

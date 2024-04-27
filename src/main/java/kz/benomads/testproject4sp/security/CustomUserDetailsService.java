@@ -1,10 +1,11 @@
 package kz.benomads.testproject4sp.security;
 
-import kz.benomads.testproject4sp.dao.UserRepository;
+import kz.benomads.testproject4sp.repository.UserRepository;
 import kz.benomads.testproject4sp.model.Role;
 import kz.benomads.testproject4sp.model.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -38,7 +40,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private Collection<GrantedAuthority> mapRolesToAuthorities(List<Role> roles) {
         return roles.stream()
-            .map(role -> (GrantedAuthority) role::getRoleName)
-            .toList();
+            .map(role -> new SimpleGrantedAuthority(role.getRoleName())).collect(Collectors.toList());
+
     }
 }

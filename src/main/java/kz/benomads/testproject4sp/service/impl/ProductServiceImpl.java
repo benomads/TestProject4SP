@@ -1,11 +1,12 @@
 package kz.benomads.testproject4sp.service.impl;
 
-import kz.benomads.testproject4sp.dao.UserRepository;
+import kz.benomads.testproject4sp.repository.CategoryRepository;
+import kz.benomads.testproject4sp.repository.UserRepository;
 import kz.benomads.testproject4sp.exception.NullValueException;
 import kz.benomads.testproject4sp.exception.ProductNotFoundException;
 import kz.benomads.testproject4sp.exception.UserNotFoundException;
 import kz.benomads.testproject4sp.mapper.ProductDtoMapper;
-import kz.benomads.testproject4sp.dao.ProductRepository;
+import kz.benomads.testproject4sp.repository.ProductRepository;
 import kz.benomads.testproject4sp.dto.ProductDto;
 import kz.benomads.testproject4sp.model.Category;
 import kz.benomads.testproject4sp.model.Product;
@@ -14,6 +15,7 @@ import kz.benomads.testproject4sp.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,13 +25,15 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductDtoMapper productDtoMapper;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository,
-                              ProductDtoMapper productDtoMapper, UserRepository userRepository) {
+                              ProductDtoMapper productDtoMapper, UserRepository userRepository, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.productDtoMapper = productDtoMapper;
         this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -52,14 +56,20 @@ public class ProductServiceImpl implements ProductService {
             .orElseThrow(() -> new UserNotFoundException(
                 String.format("UserEntity id=%d not found", userId)));
 
+        Long categoryId = productDto.getCategory().get(0).getId();
+
+        Category category = categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new ProductNotFoundException(
+                String.format("Category id=%d not found", categoryId)));
+
+// Build and save the Product
         Product product = Product.builder()
             .title(productDto.getTitle())
             .description(productDto.getDescription())
-            .imageUrl(productDto.getImageUrl())
-            .category(productDto.getCategory())
-            .quantity(productDto.getQuantity())
             .price(productDto.getPrice())
-            .users(user) // Set the user
+            .quantity(productDto.getQuantity())
+            .imageUrl(productDto.getImageUrl())
+            .category(Collections.singletonList(category))
             .build();
         productRepository.save(product);
 

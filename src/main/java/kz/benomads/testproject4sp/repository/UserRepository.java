@@ -1,4 +1,4 @@
-package kz.benomads.testproject4sp.dao;
+package kz.benomads.testproject4sp.repository;
 
 import kz.benomads.testproject4sp.model.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

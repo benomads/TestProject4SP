@@ -1,36 +1,27 @@
 package kz.benomads.testproject4sp.service.impl;
 
-import kz.benomads.testproject4sp.dao.UserRepository;
+import kz.benomads.testproject4sp.repository.UserRepository;
 import kz.benomads.testproject4sp.dto.UserDto;
-import kz.benomads.testproject4sp.dto.UserRegisterDto;
 import kz.benomads.testproject4sp.exception.NullValueException;
-import kz.benomads.testproject4sp.exception.UserAlreadyExistsException;
 import kz.benomads.testproject4sp.exception.UserNotFoundException;
 import kz.benomads.testproject4sp.mapper.UserDtoMapper;
-import kz.benomads.testproject4sp.model.Role;
 import kz.benomads.testproject4sp.model.UserEntity;
 import kz.benomads.testproject4sp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final UserDtoMapper userDtoMapper;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
-                           PasswordEncoder passwordEncoder,
                            UserDtoMapper userDtoMapper) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
         this.userDtoMapper = userDtoMapper;
     }
 

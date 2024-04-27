@@ -38,7 +38,7 @@ public class UserEntity extends BaseEntity {
     @NotBlank(message = "Phone number is required")
     private String phoneNumber;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
 
     @OneToMany

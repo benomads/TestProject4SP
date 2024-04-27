@@ -3,9 +3,9 @@ package kz.benomads.testproject4sp.service.impl;
 import kz.benomads.testproject4sp.exception.NullValueException;
 import kz.benomads.testproject4sp.exception.OrderNotFoundException;
 import kz.benomads.testproject4sp.mapper.OrderDtoMapper;
-import kz.benomads.testproject4sp.dao.OrderRepository;
-import kz.benomads.testproject4sp.dao.ProductRepository;
-import kz.benomads.testproject4sp.dao.UserRepository;
+import kz.benomads.testproject4sp.repository.OrderRepository;
+import kz.benomads.testproject4sp.repository.ProductRepository;
+import kz.benomads.testproject4sp.repository.UserRepository;
 import kz.benomads.testproject4sp.dto.OrderDto;
 import kz.benomads.testproject4sp.model.Category;
 import kz.benomads.testproject4sp.model.Order;
@@ -173,5 +173,16 @@ public class OrderServiceImpl implements OrderService {
 
         // Delete Order by id
         orderRepository.deleteById(id);
+    }
+
+    @Override
+    public List<OrderDto> getOrdersByUserId(Long userId) {
+        if (userId == null) {
+            throw new NullValueException("User id cannot be null");
+        }
+            List<Order> orders = orderRepository.findAllByUserId(userId);
+        return orders.stream()
+            .map(orderDtoMapper)
+            .collect(Collectors.toList());
     }
 }
