@@ -38,46 +38,37 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto createProduct(ProductDto productDto, Long userId) {
-        if (productDto == null) {
-            throw new NullValueException("ProductDto cannot be null");
+        if (productDto == null || userId == null) {
+            throw new NullValueException("ProductDto or User Id cannot be null");
         }
-        // Check if the required fields are null or empty
-        if (productDto.getTitle() == null || productDto.getTitle().isEmpty()) {
-            throw new NullValueException("Product name cannot be null or empty");
-        }
-        if (productDto.getDescription() == null || productDto.getDescription().isEmpty()) {
-            throw new NullValueException("Product description cannot be null or empty");
-        }
-        if (productDto.getPrice() == null) {
-            throw new NullValueException("Product price cannot be null");
-        }
-        // Check if the user exists
-        UserEntity user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException(
-                String.format("UserEntity id=%d not found", userId)));
 
-        Long categoryId = productDto.getCategory().get(0).getId();
+//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//            String currentPrincipalName = authentication.getName();
+//
+//            // Assuming that the principal's name is the user's ID
+//            Long userIdfrom = Long.parseLong(currentPrincipalName);
 
-        Category category = categoryRepository.findById(categoryId)
-            .orElseThrow(() -> new ProductNotFoundException(
-                String.format("Category id=%d not found", categoryId)));
+            UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(
+                    String.format("User id=%d not found", userId)));
 
-// Build and save the Product
+        Category category = categoryRepository
+            .findAllByCategoryName(productDto.getCategory().toString());
+
+
         Product product = Product.builder()
             .title(productDto.getTitle())
             .description(productDto.getDescription())
-            .price(productDto.getPrice())
-            .quantity(productDto.getQuantity())
             .imageUrl(productDto.getImageUrl())
-            .category(Collections.singletonList(category))
+            .category(productDto.getCategory())
+            .quantity(productDto.getQuantity())
+            .price(productDto.getPrice())
+            .users(user)
             .build();
-        productRepository.save(product);
 
-        // Add the product to the user's list of products
-        user.getProducts().add(product);
-        userRepository.save(user);
+        Product savedProduct = productRepository.save(product);
 
-        return productDtoMapper.apply(product);
+        return productDtoMapper.apply(savedProduct);
     }
 
     @Override
@@ -169,4 +160,6 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(id);
 
     }
+
+
 }
