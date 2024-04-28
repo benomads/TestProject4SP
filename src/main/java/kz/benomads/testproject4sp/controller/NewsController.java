@@ -31,22 +31,22 @@ public class NewsController {
         return new ResponseEntity<>(newsService.getNewsById(id), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<NewsDto> createNews(@RequestBody NewsDto newsDto) {
         return new ResponseEntity<>(newsService.createNews(newsDto), HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<NewsDto> updateNews(@PathVariable Long id,
                                               @RequestBody NewsDto newsDto) {
 
         return new ResponseEntity<>(newsService.updateNews(id, newsDto), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteNews(@PathVariable Long id) {
         newsService.deleteNews(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

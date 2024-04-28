@@ -42,8 +42,8 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductsByCategory(category));
     }
 
+    @PostMapping("/{userId}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    @PostMapping("/create/{userId}")
     public ResponseEntity<ProductDto> createProduct(
         @PathVariable Long userId,
         @RequestBody ProductDto productDto) {
@@ -54,16 +54,16 @@ public class ProductController {
             .body(product);
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id,
                                                     @RequestBody ProductDto productDto) {
 
         return ResponseEntity.ok(productService.updateProduct(id, productDto));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
