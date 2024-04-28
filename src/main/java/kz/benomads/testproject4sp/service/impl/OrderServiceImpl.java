@@ -1,8 +1,11 @@
 package kz.benomads.testproject4sp.service.impl;
 
-import kz.benomads.testproject4sp.dao.OrderRepository;
-import kz.benomads.testproject4sp.dao.ProductRepository;
-import kz.benomads.testproject4sp.dao.UserRepository;
+import kz.benomads.testproject4sp.exception.NullValueException;
+import kz.benomads.testproject4sp.exception.OrderNotFoundException;
+import kz.benomads.testproject4sp.mapper.OrderDtoMapper;
+import kz.benomads.testproject4sp.repository.OrderRepository;
+import kz.benomads.testproject4sp.repository.ProductRepository;
+import kz.benomads.testproject4sp.repository.UserRepository;
 import kz.benomads.testproject4sp.dto.OrderDto;
 import kz.benomads.testproject4sp.model.Category;
 import kz.benomads.testproject4sp.model.Order;
@@ -17,20 +20,31 @@ import java.util.stream.Collectors;
 @Service
 public class OrderServiceImpl implements OrderService {
 
+
+    private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+    private final OrderDtoMapper orderDtoMapper;
+
     @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private ProductRepository productRepository;
-    @Autowired
-    private UserRepository userRepository;
+    public OrderServiceImpl(OrderRepository orderRepository,
+                            ProductRepository productRepository,
+                            UserRepository userRepository,
+                            OrderDtoMapper orderDtoMapper) {
+        this.orderRepository = orderRepository;
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
+        this.orderDtoMapper = orderDtoMapper;
+    }
 
     @Override
     public OrderDto createOrder(OrderDto orderDto) {
         if (orderDto == null) {
-            throw new IllegalArgumentException("OrderDto cannot be null");
+            throw new NullValueException("OrderDto cannot be null");
         }
 
-        Double calculateTotalPrice = calculateTotalPrice(orderDto.getProductId(), orderDto.getQuantity());
+        Double calculateTotalPrice = calculateTotalPrice(orderDto.getProductId(),
+                                                         orderDto.getQuantity());
         // Convert OrderDto to Order
         Order order = Order.builder()
             .user(userRepository.findUserById(orderDto.getUserId()))
@@ -44,18 +58,11 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
 
         // Convert saved Order back to OrderDto and return
-        return OrderDto.builder()
-            .id(savedOrder.getId())
-            .userId(savedOrder.getUser().getId())
-            .productId(savedOrder.getProduct().getId())
-            .quantity(savedOrder.getQuantity())
-            .totalPrice(savedOrder.getTotalPrice())
-            .address(savedOrder.getAddress())
-            .phoneNumber(savedOrder.getPhoneNumber())
-            .build();
+        return orderDtoMapper.apply(savedOrder);
     }
 
-    private Double calculateTotalPrice(Long productId, Integer quantity) {
+    private Double calculateTotalPrice(Long productId,
+                                       Integer quantity) {
         // Fetch Product by id and calculate total amount
         Product product = productRepository.findProductById(productId);
         return product.getPrice() * quantity;
@@ -64,22 +71,16 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto getOrderById(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("Id cannot be null");
+            throw new NullValueException("Id cannot be null");
         }
 
         // Fetch Order by id
-        Order order = orderRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        Order order = orderRepository.findById(id)
+            .orElseThrow(() -> new OrderNotFoundException(
+                String.format("Question with id=%d not found", id)));
 
         // Convert fetched Order to OrderDto and return
-        return OrderDto.builder()
-            .id(order.getId())
-            .userId(order.getUser().getId())
-            .productId(order.getProduct().getId())
-            .quantity(order.getQuantity())
-            .totalPrice(order.getTotalPrice())
-            .address(order.getAddress())
-            .phoneNumber(order.getPhoneNumber())
-            .build();
+        return orderDtoMapper.apply(order);
     }
 
     @Override
@@ -87,21 +88,12 @@ public class OrderServiceImpl implements OrderService {
         List<Order> orders = orderRepository.findAll();
 
         if (orders.isEmpty()) {
-            throw new IllegalArgumentException("No orders found");
+            throw new OrderNotFoundException("No orders found");
         }
-
 
         // Convert each Order to OrderDto and collect to a list
         return orders.stream()
-            .map(order -> OrderDto.builder()
-                .id(order.getId())
-                .userId(order.getUser().getId())
-                .productId(order.getProduct().getId())
-                .quantity(order.getQuantity())
-                .totalPrice(order.getTotalPrice())
-                .address(order.getAddress())
-                .phoneNumber(order.getPhoneNumber())
-                .build())
+            .map(orderDtoMapper)
             .collect(Collectors.toList());
 
     }
@@ -111,49 +103,86 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderDto> getOrdersByCategory(Category category) {
 
         if (category == null || category.toString().isEmpty()) {
-            throw new IllegalArgumentException("Category cannot be null or empty");
+            throw new NullValueException(
+                String
+                    .format("Category category=%s cannot be null or empty", category));
         }
 
-        // Fetch all Orders by category
         List<Order> orders = orderRepository.findAllByProductCategory(category);
 
         // Convert each Order to OrderDto and collect to a list
         return orders.stream()
-            .map(order -> OrderDto.builder()
-                .id(order.getId())
-                .userId(order.getUser().getId())
-                .productId(order.getProduct().getId())
-                .quantity(order.getQuantity())
-                .totalPrice(order.getTotalPrice())
-                .address(order.getAddress())
-                .phoneNumber(order.getPhoneNumber())
-                .build())
+            .map(orderDtoMapper)
             .collect(Collectors.toList());
     }
 
     @Override
-    public OrderDto updateOrder(OrderDto orderDto) {
+    public OrderDto updateOrder(Long id, OrderDto orderDto) {
         if (orderDto == null || orderDto.getId() == null) {
-            throw new IllegalArgumentException("OrderDto or Order id cannot be null");
+            throw new NullValueException(
+                String
+                    .format("OrderDto or Order id=%d cannot be null", id));
         }
 
-        // Fetch Order by id, update fields, save, and convert to OrderDto
-        Order order = orderRepository.findById(orderDto.getId()).orElseThrow(() -> new IllegalArgumentException("Order not found"));
-        // Set fields from orderDto to order
-        Order updatedOrder = orderRepository.save(order);
-        OrderDto updatedOrderDto = new OrderDto();
+        Order order = orderRepository.findOrderById(orderDto.getId())
+            .orElseThrow(() -> new OrderNotFoundException("No orders found"));
 
-        // Set fields from updatedOrder to updatedOrderDto
-        return updatedOrderDto;
+        // Check and Update Order with new values
+        Order updatedOrder = checkOrderDtoFields(order, orderDto);
+
+        // Save the updated Order back to the database
+        orderRepository.save(updatedOrder);
+
+        // Convert updated Order to OrderDto and return
+        return orderDtoMapper.apply(updatedOrder);
     }
+
+    private Order checkOrderDtoFields(Order order, OrderDto orderDto) {
+        if (orderDto.getUserId() != null) {
+            order.setUser(userRepository.findUserById(orderDto.getUserId()));
+        }
+        if (orderDto.getProductId() != null) {
+            order.setProduct(productRepository.findProductById(orderDto.getProductId()));
+        }
+        if (orderDto.getQuantity() != null) {
+            order.setQuantity(orderDto.getQuantity());
+        }
+        if (orderDto.getAddress() != null && !orderDto.getAddress().isEmpty()) {
+            order.setAddress(orderDto.getAddress());
+        }
+        if (orderDto.getPhoneNumber() != null && !orderDto.getPhoneNumber().isEmpty()) {
+            order.setPhoneNumber(orderDto.getPhoneNumber());
+        }
+
+        order.setTotalPrice(calculateTotalPrice(orderDto.getProductId(),
+                                                orderDto.getQuantity()));
+
+        return order;
+    }
+
+
 
     @Override
     public void deleteOrder(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("Id cannot be null");
+            throw new NullValueException("Id cannot be null");
+        }
+        if (!orderRepository.existsById(id)) {
+            throw new OrderNotFoundException("No orders found");
         }
 
         // Delete Order by id
         orderRepository.deleteById(id);
+    }
+
+    @Override
+    public List<OrderDto> getOrdersByUserId(Long userId) {
+        if (userId == null) {
+            throw new NullValueException("User id cannot be null");
+        }
+            List<Order> orders = orderRepository.findAllByUserId(userId);
+        return orders.stream()
+            .map(orderDtoMapper)
+            .collect(Collectors.toList());
     }
 }

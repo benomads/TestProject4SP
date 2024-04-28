@@ -1,9 +1,9 @@
 package kz.benomads.testproject4sp.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
@@ -17,15 +17,30 @@ import java.util.List;
 @Builder
 public class Product extends BaseEntity {
 
+    @NotBlank(message = "Title is required")
     private String title;
+
+    @NotBlank(message = "Description is required")
     private String description;
+
+    @NotNull(message = "Price is required")
+    @Min(value = 0, message = "Price must be greater than or equal to 0")
     private Double price;
+
+    @NotNull(message = "Quantity is required")
+    @Min(value = 0, message = "Quantity must be greater than or equal to 0")
     private Integer quantity;
+
     private String imageUrl;
-    private Category category;
+
+    @NotNull(message = "Category is required")
+    @ManyToMany
+    private List<Category> category;
+
     @OneToMany
     private List<Order> orders;
+
     @ManyToOne
-    private User users;
+    private UserEntity users;
 
 }

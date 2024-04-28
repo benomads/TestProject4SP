@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,8 +21,7 @@ public class ProductDto {
     private Double price;
     private Integer quantity;
     private String imageUrl;
-    private Category category;
-    private List<Long> orderIds;
-    private Long userId;
+    private List<Category> category;
+    private Long usersId;
 
 }
