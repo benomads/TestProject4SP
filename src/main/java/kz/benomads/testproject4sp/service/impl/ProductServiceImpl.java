@@ -37,32 +37,31 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto createProduct(ProductDto productDto, Long userId) {
-        if (productDto == null || userId == null) {
-            throw new NullValueException("ProductDto or User Id cannot be null");
-        }
+        validateInput(productDto, userId);
 
-        UserEntity user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException(
-                String.format("User id=%d not found", userId)));
+        UserEntity user = findUserById(userId);
 
         List<Category> validCategories = checkCategories(productDto.getCategory());
 
-        Product product = Product.builder()
-            .title(productDto.getTitle())
-            .description(productDto.getDescription())
-            .imageUrl(productDto.getImageUrl())
-            .category(validCategories)
-            .quantity(productDto.getQuantity())
-            .price(productDto.getPrice())
-            .users(user)
-            .build();
+        Product product = buildProduct(productDto, user, validCategories);
 
+        Product savedProduct = saveProduct(product);
 
-        Product savedProduct = productRepository.save(product);
-        user.getProducts().add(savedProduct);
-        userRepository.save(user);
+        addUserProduct(user, savedProduct);
 
         return productDtoMapper.apply(savedProduct);
+    }
+
+    private void validateInput(ProductDto productDto, Long userId) {
+        if (productDto == null || userId == null) {
+            throw new NullValueException("ProductDto or User Id cannot be null");
+        }
+    }
+
+    private UserEntity findUserById(Long userId) {
+        return userRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException(
+                String.format("User id=%d not found", userId)));
     }
 
     private List<Category> checkCategories(List<Category> categories) {
@@ -71,23 +70,63 @@ public class ProductServiceImpl implements ProductService {
             .flatMap(List::stream)
             .collect(Collectors.toList());
 
-            if (validCategories.isEmpty()) {
-                throw new ProductNotFoundException("No valid categories found");
-            }
+        if (validCategories.isEmpty()) {
+            throw new ProductNotFoundException("No valid categories found");
+        }
         return validCategories;
     }
 
+    private Product buildProduct(ProductDto productDto, UserEntity user, List<Category> validCategories) {
+        return Product.builder()
+            .title(productDto.getTitle())
+            .description(productDto.getDescription())
+            .imageUrl(productDto.getImageUrl())
+            .category(validCategories)
+            .quantity(productDto.getQuantity())
+            .price(productDto.getPrice())
+            .users(user)
+            .build();
+    }
+
+    private Product saveProduct(Product product) {
+        return productRepository.save(product);
+    }
+
+    private void addUserProduct(UserEntity user, Product product) {
+        user.getProducts().add(product);
+        userRepository.save(user);
+    }
+
+
+
+
     @Override
     public ProductDto getProductById(Long id) {
+        validateProductId(id);
+
+        Product product = findProductById(id);
+
+        return mapProductToDto(product);
+    }
+
+    private void validateProductId(Long id) {
         if (id == null) {
             throw new NullValueException("Product id cannot be null");
         }
-        Product product = productRepository.findById(id)
+    }
+
+    private Product findProductById(Long id) {
+        return productRepository.findById(id)
             .orElseThrow(() -> new ProductNotFoundException(
                 String.format("Product id=%d not found", id)));
+    }
 
+    private ProductDto mapProductToDto(Product product) {
         return productDtoMapper.apply(product);
     }
+
+//    make this more clear and comfortable for reading and improving, add some important validations and exceptions:
+
 
     @Override
     public List<ProductDto> getAllProducts() {
@@ -97,10 +136,17 @@ public class ProductServiceImpl implements ProductService {
             throw new ProductNotFoundException("No products found");
         }
 
+        return mapProductsToDto(products);
+    }
+
+    private List<ProductDto> mapProductsToDto(List<Product> products) {
         return products.stream()
             .map(productDtoMapper)
             .collect(Collectors.toList());
     }
+
+
+
 
     @Override
     public List<ProductDto> getProductsByCategory(Category category) {
@@ -125,14 +171,14 @@ public class ProductServiceImpl implements ProductService {
             .orElseThrow(() -> new ProductNotFoundException(
                 String.format("Product id=%d not found", id)));
 
-        Product checkedProduct = checkProductDtoFields(product, productDto);
+        Product checkedProduct = checkProductDtoFieldsForUpdate(product, productDto);
 
         productRepository.save(checkedProduct);
 
         return productDtoMapper.apply(checkedProduct);
     }
 
-    private Product checkProductDtoFields(Product product, ProductDto productDto) {
+    private Product checkProductDtoFieldsForUpdate(Product product, ProductDto productDto) {
         if (productDto.getTitle() != null && !productDto.getTitle().isEmpty()) {
             product.setTitle(productDto.getTitle());
         }

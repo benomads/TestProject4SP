@@ -19,14 +19,16 @@ public class NewsServiceImpl implements NewsService {
     private final ProductRepository productRepository;
 
     @Autowired
-    public NewsServiceImpl(NewsRepository newsRepository, ProductRepository productRepository) {
+    public NewsServiceImpl(NewsRepository newsRepository,
+                           ProductRepository productRepository) {
         this.newsRepository = newsRepository;
         this.productRepository = productRepository;
     }
 
     @Override
     public List<NewsDto> getAllNews() {
-        return newsRepository.findAll().stream()
+        List<News> news = newsRepository.findAll();
+        return news.stream()
             .map(this::convertToDto)
             .collect(Collectors.toList());
     }
@@ -42,6 +44,8 @@ public class NewsServiceImpl implements NewsService {
     @Override
     public NewsDto createNews(NewsDto newsDto) {
         News news = convertToEntity(newsDto);
+        news.setProduct(
+            productRepository.findProductById(newsDto.getProductId()));
         newsRepository.save(news);
         return convertToDto(news);
     }
