@@ -125,7 +125,6 @@ public class ProductServiceImpl implements ProductService {
         return productDtoMapper.apply(product);
     }
 
-//    make this more clear and comfortable for reading and improving, add some important validations and exceptions:
 
 
     @Override
