@@ -30,7 +30,8 @@ public class UserDto {
                    String avatarUrl,
                    String email,
                    String phoneNumber,
-                   List<Role> roles) {
+                   List<Role> roles
+                   ) {
         this.id = id;
         this.fullName = fullName;
         this.username = username;

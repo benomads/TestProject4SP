@@ -15,7 +15,6 @@ import kz.benomads.testproject4sp.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,33 +41,40 @@ public class ProductServiceImpl implements ProductService {
             throw new NullValueException("ProductDto or User Id cannot be null");
         }
 
-//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//            String currentPrincipalName = authentication.getName();
-//
-//            // Assuming that the principal's name is the user's ID
-//            Long userIdfrom = Long.parseLong(currentPrincipalName);
+        UserEntity user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException(
+                String.format("User id=%d not found", userId)));
 
-            UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(
-                    String.format("User id=%d not found", userId)));
-
-        Category category = categoryRepository
-            .findAllByCategoryName(productDto.getCategory().toString());
-
+        List<Category> validCategories = checkCategories(productDto.getCategory());
 
         Product product = Product.builder()
             .title(productDto.getTitle())
             .description(productDto.getDescription())
             .imageUrl(productDto.getImageUrl())
-            .category(productDto.getCategory())
+            .category(validCategories)
             .quantity(productDto.getQuantity())
             .price(productDto.getPrice())
             .users(user)
             .build();
 
+
         Product savedProduct = productRepository.save(product);
+        user.getProducts().add(savedProduct);
+        userRepository.save(user);
 
         return productDtoMapper.apply(savedProduct);
+    }
+
+    private List<Category> checkCategories(List<Category> categories) {
+        List<Category> validCategories = categories.stream()
+            .map(category -> categoryRepository.findAllByCategoryName(category.getCategoryName()))
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
+
+            if (validCategories.isEmpty()) {
+                throw new ProductNotFoundException("No valid categories found");
+            }
+        return validCategories;
     }
 
     @Override
