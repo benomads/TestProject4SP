@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class TestProject4SpApplicationTests {
+    //TODO write tests for each endpoint in the application
 
     @Test
     void contextLoads() {
