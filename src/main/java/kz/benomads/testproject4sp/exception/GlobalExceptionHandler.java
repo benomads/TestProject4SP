@@ -3,6 +3,7 @@ package kz.benomads.testproject4sp.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -73,6 +74,15 @@ public class GlobalExceptionHandler {
         ApiException apiException = getApiException(ex, request, httpInternalServerErrorStatus);
         return new ResponseEntity<>(apiException, httpInternalServerErrorStatus);
     }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex, HttpServletRequest request) {
+        ApiException apiException = getApiException(ex, request, HttpStatus.UNAUTHORIZED);
+
+        return new ResponseEntity<>(apiException, HttpStatus.UNAUTHORIZED);
+    }
+
+
 
 
 

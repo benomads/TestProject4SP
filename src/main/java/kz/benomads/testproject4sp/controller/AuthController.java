@@ -1,5 +1,6 @@
 package kz.benomads.testproject4sp.controller;
 
+import jakarta.validation.Valid;
 import kz.benomads.testproject4sp.dto.UserDto;
 import kz.benomads.testproject4sp.dto.UserLoginDto;
 import kz.benomads.testproject4sp.dto.UserRegisterDto;
@@ -32,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDto> register(@RequestBody UserRegisterDto userRegisterDto) {
+    public ResponseEntity<UserDto> register(@Valid @RequestBody UserRegisterDto userRegisterDto) {
         UserDto userDto = authService.register(userRegisterDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(userDto);
     }

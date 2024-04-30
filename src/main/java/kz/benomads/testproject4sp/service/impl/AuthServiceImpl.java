@@ -13,6 +13,7 @@ import kz.benomads.testproject4sp.model.UserEntity;
 import kz.benomads.testproject4sp.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -53,8 +54,7 @@ public class AuthServiceImpl implements AuthService {
             )
         );
         if (!authentication.isAuthenticated()) {
-            throw new UserNotFoundException(
-                String.format("User %s not found", userLoginDto.getUsername()));
+            throw new BadCredentialsException("Invalid username or password");
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
