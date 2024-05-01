@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import kz.benomads.testproject4sp.validation.PhoneNumber;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class UserEntity extends BaseEntity {
     private String email;
 
     @NotBlank(message = "Phone number is required")
+    @PhoneNumber
     private String phoneNumber;
 
     @ManyToMany(fetch = FetchType.EAGER)

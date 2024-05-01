@@ -4,10 +4,10 @@ spring:
       ddl-auto: update
     show-sql: true
   datasource:
-    url: jdbc:postgresql://localhost:5433/TestProject4SP
+    url: jdbc:postgresql://localhost:5432/test_project_4sp_db
     username: postgres
     password: qwerty
     driver-class-name: org.postgresql.Driver
 
-  flyway:
-    baselineOnMigrate: true
+#  flyway:
+#    baselineOnMigrate: true

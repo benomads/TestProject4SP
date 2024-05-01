@@ -1,0 +1,38 @@
+version: '3.8'
+
+volumes:
+  pg_demo:
+
+services:
+  app:
+    container_name: test_project_4sp
+    restart: always
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db_data
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db_data:5432/test_project_4sp_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: qwerty
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JAVA_OPTS: -Xmx512m
+
+  db_data:
+    container_name: test_project_4sp_db
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: test_project_4sp_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: qwerty
+    volumes:
+      - pg_demo:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+
+
+

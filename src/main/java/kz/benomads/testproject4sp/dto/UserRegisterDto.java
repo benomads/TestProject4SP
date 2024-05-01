@@ -1,5 +1,6 @@
 package kz.benomads.testproject4sp.dto;
 
+import kz.benomads.testproject4sp.validation.PhoneNumber;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,6 +36,7 @@ public class UserRegisterDto {
     private String email;
 
     @NotBlank(message = "Phone number is required")
+    @PhoneNumber
     private String phoneNumber;
 
 }

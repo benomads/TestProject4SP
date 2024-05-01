@@ -31,7 +31,6 @@ public class AuthController {
     @PostMapping("/login")
     public RedirectView login(@RequestBody UserLoginDto userLoginDto) {
         UserDto userDto = authService.login(userLoginDto);
-//     return ResponseEntity.ok(userDto);
         return new RedirectView("/api/v1/users" + "/" + userDto.getId());
     }
 

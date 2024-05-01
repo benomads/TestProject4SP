@@ -3,9 +3,11 @@ package kz.benomads.testproject4sp.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import kz.benomads.testproject4sp.validation.PhoneNumber;
 import lombok.*;
 
 
@@ -38,6 +40,7 @@ public class Order extends BaseEntity {
     private String address;
 
     @NotBlank(message = "Phone number is required")
+    @PhoneNumber
     private String phoneNumber;
 
 }

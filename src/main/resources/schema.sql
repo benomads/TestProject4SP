@@ -1,5 +1,5 @@
 -- UserEntity table
-CREATE TABLE users
+CREATE TABLE IF NOT EXISTS users
 (
     id           BIGSERIAL    NOT NULL,
     created_at   TIMESTAMP(6),
@@ -14,7 +14,7 @@ CREATE TABLE users
 );
 
 -- Order table
-CREATE TABLE orders
+CREATE TABLE IF NOT EXISTS orders
 (
     id           BIGSERIAL NOT NULL,
     created_at   TIMESTAMP(6),
@@ -30,7 +30,7 @@ CREATE TABLE orders
 );
 
 -- Product table
-CREATE TABLE products
+CREATE TABLE IF NOT EXISTS products
 (
     id          BIGSERIAL NOT NULL,
     created_at  TIMESTAMP(6),
@@ -46,7 +46,7 @@ CREATE TABLE products
 );
 
 
-CREATE TABLE News
+CREATE TABLE IF NOT EXISTS News
 (
     id        BIGINT PRIMARY KEY,
     createdAt TIMESTAMP,
@@ -56,13 +56,13 @@ CREATE TABLE News
     FOREIGN KEY (productId) REFERENCES Products (id)
 );
 
-CREATE TABLE roles
+CREATE TABLE IF NOT EXISTS roles
 (
     id       INT PRIMARY KEY ,
     roleName VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE UserRoles
+CREATE TABLE IF NOT EXISTS UserRoles
 (
     userId BIGINT,
     roleId INT,
@@ -71,7 +71,7 @@ CREATE TABLE UserRoles
     FOREIGN KEY (roleId) REFERENCES Roles (id)
 );
 
-CREATE TABLE categories
+CREATE TABLE IF NOT EXISTS categories
 (
     id           BIGINT PRIMARY KEY ,
     categoryName VARCHAR(255) NOT NULL
