@@ -28,7 +28,7 @@ public class Order extends BaseEntity {
 
     @NotNull(message = "Quantity is required")
     @Min(value = 1, message = "Quantity must be greater than or equal to 1")
-    private int quantity;
+    private Integer quantity;
 
     @NotNull(message = "Total price is required")
     @Min(value = 0, message = "Total price must be greater than or equal to 0")

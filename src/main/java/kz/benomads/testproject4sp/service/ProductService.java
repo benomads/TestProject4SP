@@ -1,6 +1,8 @@
 package kz.benomads.testproject4sp.service;
 
-import kz.benomads.testproject4sp.dto.ProductDto;
+import kz.benomads.testproject4sp.dto.CategoryDto;
+import kz.benomads.testproject4sp.dto.ProductRequestDto;
+import kz.benomads.testproject4sp.dto.ProductResponseDto;
 import kz.benomads.testproject4sp.model.Category;
 import org.springframework.stereotype.Service;
 
@@ -9,12 +11,12 @@ import java.util.List;
 @Service
 public interface ProductService {
 
-    ProductDto createProduct(ProductDto productDto, Long userId);
-    ProductDto getProductById(Long id);
-    List<ProductDto> getAllProducts();
+    ProductResponseDto createProduct(ProductRequestDto productRequestDto, Long userId);
+    ProductResponseDto getProductById(Long id);
+    List<ProductResponseDto> getAllProducts();
 
-    List<ProductDto> getProductsByCategory(Category category);
+    List<ProductResponseDto> getProductsByCategory(List<CategoryDto> category);
 
-    ProductDto updateProduct(Long id, ProductDto productDto);
+    ProductResponseDto updateProduct(Long id, ProductRequestDto productRequestDto);
     void deleteProduct(Long id);
 }

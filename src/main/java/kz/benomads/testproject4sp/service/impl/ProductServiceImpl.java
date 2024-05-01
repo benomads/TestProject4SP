@@ -1,5 +1,8 @@
 package kz.benomads.testproject4sp.service.impl;
 
+import kz.benomads.testproject4sp.dto.CategoryDto;
+import kz.benomads.testproject4sp.dto.ProductRequestDto;
+import kz.benomads.testproject4sp.dto.ProductResponseDto;
 import kz.benomads.testproject4sp.repository.CategoryRepository;
 import kz.benomads.testproject4sp.repository.UserRepository;
 import kz.benomads.testproject4sp.exception.NullValueException;
@@ -7,7 +10,6 @@ import kz.benomads.testproject4sp.exception.ProductNotFoundException;
 import kz.benomads.testproject4sp.exception.UserNotFoundException;
 import kz.benomads.testproject4sp.mapper.ProductDtoMapper;
 import kz.benomads.testproject4sp.repository.ProductRepository;
-import kz.benomads.testproject4sp.dto.ProductDto;
 import kz.benomads.testproject4sp.model.Category;
 import kz.benomads.testproject4sp.model.Product;
 import kz.benomads.testproject4sp.model.UserEntity;
@@ -36,14 +38,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto createProduct(ProductDto productDto, Long userId) {
-        validateInput(productDto, userId);
+    public ProductResponseDto createProduct(ProductRequestDto productRequestDto, Long userId) {
+        validateInput(productRequestDto, userId);
 
         UserEntity user = findUserById(userId);
 
-        List<Category> validCategories = checkCategories(productDto.getCategory());
+        List<Category> validCategories = checkCategories(productRequestDto.getCategory());
 
-        Product product = buildProduct(productDto, user, validCategories);
+        Product product = buildProduct(productRequestDto, user, validCategories);
 
         Product savedProduct = saveProduct(product);
 
@@ -52,9 +54,9 @@ public class ProductServiceImpl implements ProductService {
         return productDtoMapper.apply(savedProduct);
     }
 
-    private void validateInput(ProductDto productDto, Long userId) {
-        if (productDto == null || userId == null) {
-            throw new NullValueException("ProductDto or User Id cannot be null");
+    private void validateInput(ProductRequestDto productRequestDto, Long userId) {
+        if (productRequestDto == null || userId == null) {
+            throw new NullValueException("ProductResponseDto or User Id cannot be null");
         }
     }
 
@@ -64,7 +66,7 @@ public class ProductServiceImpl implements ProductService {
                 String.format("User id=%d not found", userId)));
     }
 
-    private List<Category> checkCategories(List<Category> categories) {
+    private List<Category> checkCategories(List<CategoryDto> categories) {
         List<Category> validCategories = categories.stream()
             .map(category -> categoryRepository.findAllByCategoryName(category.getCategoryName()))
             .flatMap(List::stream)
@@ -76,14 +78,14 @@ public class ProductServiceImpl implements ProductService {
         return validCategories;
     }
 
-    private Product buildProduct(ProductDto productDto, UserEntity user, List<Category> validCategories) {
+    private Product buildProduct(ProductRequestDto productRequestDto, UserEntity user, List<Category> validCategories) {
         return Product.builder()
-            .title(productDto.getTitle())
-            .description(productDto.getDescription())
-            .imageUrl(productDto.getImageUrl())
+            .title(productRequestDto.getTitle())
+            .description(productRequestDto.getDescription())
+            .imageUrl(productRequestDto.getImageUrl())
             .category(validCategories)
-            .quantity(productDto.getQuantity())
-            .price(productDto.getPrice())
+            .quantity(productRequestDto.getQuantity())
+            .price(productRequestDto.getPrice())
             .users(user)
             .build();
     }
@@ -101,7 +103,7 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public ProductDto getProductById(Long id) {
+    public ProductResponseDto getProductById(Long id) {
         validateProductId(id);
 
         Product product = findProductById(id);
@@ -121,14 +123,14 @@ public class ProductServiceImpl implements ProductService {
                 String.format("Product id=%d not found", id)));
     }
 
-    private ProductDto mapProductToDto(Product product) {
+    private ProductResponseDto mapProductToDto(Product product) {
         return productDtoMapper.apply(product);
     }
 
 
 
     @Override
-    public List<ProductDto> getAllProducts() {
+    public List<ProductResponseDto> getAllProducts() {
         List<Product> products = productRepository.findAll();
 
         if (products.isEmpty()) {
@@ -138,7 +140,7 @@ public class ProductServiceImpl implements ProductService {
         return mapProductsToDto(products);
     }
 
-    private List<ProductDto> mapProductsToDto(List<Product> products) {
+    private List<ProductResponseDto> mapProductsToDto(List<Product> products) {
         return products.stream()
             .map(productDtoMapper)
             .collect(Collectors.toList());
@@ -148,12 +150,12 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public List<ProductDto> getProductsByCategory(Category category) {
-        if (category == null || category.toString().isEmpty()) {
+    public List<ProductResponseDto> getProductsByCategory(List<CategoryDto> category) {
+        if (category == null || category.isEmpty()) {
             throw new NullValueException("Category cannot be null or empty");
         }
 
-        List<Product> products = productRepository.findAllProductsByCategory(category);
+        List<Product> products = productRepository.findAllProductsByCategory(checkCategories(category));
 
         return products.stream()
             .map(productDtoMapper)
@@ -161,40 +163,40 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto updateProduct(Long id, ProductDto productDto) {
-        if (productDto == null || id == null) {
-            throw new NullValueException("ProductDto or Product Id cannot be null");
+    public ProductResponseDto updateProduct(Long id, ProductRequestDto productRequestDto) {
+        if (productRequestDto == null || id == null) {
+            throw new NullValueException("ProductResponseDto or Product Id cannot be null");
         }
 
-        Product product = productRepository.findById(productDto.getId())
+        Product product = productRepository.findById(id)
             .orElseThrow(() -> new ProductNotFoundException(
                 String.format("Product id=%d not found", id)));
 
-        Product checkedProduct = checkProductDtoFieldsForUpdate(product, productDto);
+        Product checkedProduct = checkProductDtoFieldsForUpdate(product, productRequestDto);
 
         productRepository.save(checkedProduct);
 
         return productDtoMapper.apply(checkedProduct);
     }
 
-    private Product checkProductDtoFieldsForUpdate(Product product, ProductDto productDto) {
-        if (productDto.getTitle() != null && !productDto.getTitle().isEmpty()) {
-            product.setTitle(productDto.getTitle());
+    private Product checkProductDtoFieldsForUpdate(Product product, ProductRequestDto productRequestDto) {
+        if (productRequestDto.getTitle() != null && !productRequestDto.getTitle().isEmpty()) {
+            product.setTitle(productRequestDto.getTitle());
         }
-        if (productDto.getDescription() != null && !productDto.getDescription().isEmpty()) {
-            product.setDescription(productDto.getDescription());
+        if (productRequestDto.getDescription() != null && !productRequestDto.getDescription().isEmpty()) {
+            product.setDescription(productRequestDto.getDescription());
         }
-        if (productDto.getImageUrl() != null && !productDto.getImageUrl().isEmpty()) {
-            product.setImageUrl(productDto.getImageUrl());
+        if (productRequestDto.getImageUrl() != null && !productRequestDto.getImageUrl().isEmpty()) {
+            product.setImageUrl(productRequestDto.getImageUrl());
         }
-        if (productDto.getCategory() != null) {
-            product.setCategory(productDto.getCategory());
+        if (productRequestDto.getCategory() != null) {
+            product.setCategory(checkCategories(productRequestDto.getCategory()));
         }
-        if (productDto.getQuantity() != null) {
-            product.setQuantity(productDto.getQuantity());
+        if (productRequestDto.getQuantity() != null) {
+            product.setQuantity(productRequestDto.getQuantity());
         }
-        if (productDto.getPrice() != null) {
-            product.setPrice(productDto.getPrice());
+        if (productRequestDto.getPrice() != null) {
+            product.setPrice(productRequestDto.getPrice());
         }
         return product;
     }

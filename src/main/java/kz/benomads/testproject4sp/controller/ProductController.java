@@ -1,7 +1,8 @@
 package kz.benomads.testproject4sp.controller;
 
-import kz.benomads.testproject4sp.dto.ProductDto;
-import kz.benomads.testproject4sp.model.Category;
+import kz.benomads.testproject4sp.dto.CategoryDto;
+import kz.benomads.testproject4sp.dto.ProductRequestDto;
+import kz.benomads.testproject4sp.dto.ProductResponseDto;
 import kz.benomads.testproject4sp.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,29 +26,29 @@ public class ProductController {
     //TODO: Implement the rest of the CRUD operations for the Product entity
 
     @GetMapping
-    public ResponseEntity<List<ProductDto>> getAllProducts() {
+    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductResponseDto> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
 
     @GetMapping("/category/{category}")
-    public ResponseEntity<List<ProductDto>> getProductsByCategory(
-        @PathVariable Category category) {
+    public ResponseEntity<List<ProductResponseDto>> getProductsByCategory(
+        @PathVariable List<CategoryDto> category) {
 
         return ResponseEntity.ok(productService.getProductsByCategory(category));
     }
 
     @PostMapping("/{userId}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public ResponseEntity<ProductDto> createProduct(
+    public ResponseEntity<ProductResponseDto> createProduct(
         @PathVariable Long userId,
-        @RequestBody ProductDto productDto) {
-        ProductDto product = productService.createProduct(productDto,userId);
+        @RequestBody ProductRequestDto productRequestDto) {
+        ProductResponseDto product = productService.createProduct(productRequestDto,userId);
 
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -56,10 +57,10 @@ public class ProductController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
-    public ResponseEntity<ProductDto> updateProduct(@PathVariable Long id,
-                                                    @RequestBody ProductDto productDto) {
+    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id,
+                                                            @RequestBody ProductRequestDto productRequestDto) {
 
-        return ResponseEntity.ok(productService.updateProduct(id, productDto));
+        return ResponseEntity.ok(productService.updateProduct(id, productRequestDto));
     }
 
     @DeleteMapping("/{id}")

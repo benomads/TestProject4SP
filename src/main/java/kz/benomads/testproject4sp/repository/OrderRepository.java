@@ -1,5 +1,6 @@
 package kz.benomads.testproject4sp.repository;
 
+import kz.benomads.testproject4sp.dto.CategoryDto;
 import kz.benomads.testproject4sp.model.Category;
 import kz.benomads.testproject4sp.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    List<Order> findAllByProductCategory(Category product_category);
+    List<Order> findAllByProductCategory(CategoryDto product_category);
 
     List<Order> findAll();
 
