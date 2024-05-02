@@ -6,6 +6,7 @@ import kz.benomads.testproject4sp.dto.OrderResponseDto;
 import kz.benomads.testproject4sp.exception.NullValueException;
 import kz.benomads.testproject4sp.exception.OrderNotFoundException;
 import kz.benomads.testproject4sp.mapper.OrderDtoMapper;
+import kz.benomads.testproject4sp.model.UserEntity;
 import kz.benomads.testproject4sp.repository.OrderRepository;
 import kz.benomads.testproject4sp.repository.ProductRepository;
 import kz.benomads.testproject4sp.repository.UserRepository;
@@ -13,6 +14,10 @@ import kz.benomads.testproject4sp.model.Order;
 import kz.benomads.testproject4sp.model.Product;
 import kz.benomads.testproject4sp.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,10 +50,13 @@ public class OrderServiceImpl implements OrderService {
         }
 
         Double calculateTotalPrice = calculateTotalPrice(orderRequestDto.getProductId(),
-                                                         orderRequestDto.getQuantity());
+            orderRequestDto.getQuantity());
+        UserEntity user = userRepository.findAllByUsername(getCurrentUserName())
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
         // Convert OrderResponseDto to Order
         Order order = Order.builder()
-            .user(userRepository.findUserById(orderRequestDto.getUserId()))
+            .user(user)
             .product(productRepository.findProductById(orderRequestDto.getProductId()))
             .quantity(orderRequestDto.getQuantity())
             .totalPrice(calculateTotalPrice)
@@ -67,6 +75,15 @@ public class OrderServiceImpl implements OrderService {
         // Fetch Product by id and calculate total amount
         Product product = productRepository.findProductById(productId);
         return product.getPrice() * quantity;
+    }
+
+    private String getCurrentUserName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = "";
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            currentUserName = authentication.getName();
+        }
+        return currentUserName;
     }
 
     @Override
@@ -127,9 +144,10 @@ public class OrderServiceImpl implements OrderService {
 
         Order order = orderRepository.findOrderById(id)
             .orElseThrow(() -> new OrderNotFoundException("No orders found"));
+        String currentUserName = getCurrentUserName();
 
         // Check and Update Order with new values
-        Order updatedOrder = checkOrderDtoFields(order, orderRequestDto);
+        Order updatedOrder = checkOrderDtoFields(order, orderRequestDto, currentUserName);
 
         // Save the updated Order back to the database
         orderRepository.save(updatedOrder);
@@ -138,9 +156,12 @@ public class OrderServiceImpl implements OrderService {
         return orderDtoMapper.apply(updatedOrder);
     }
 
-    private Order checkOrderDtoFields(Order order, OrderRequestDto orderRequestDto) {
-        if (orderRequestDto.getUserId() != null) {
-            order.setUser(userRepository.findUserById(orderRequestDto.getUserId()));
+    private Order checkOrderDtoFields(Order order,
+                                      OrderRequestDto orderRequestDto,
+                                      String currentUserName) {
+        if (currentUserName != null) {
+            order.setUser(userRepository.findAllByUsername(currentUserName)
+                            .orElseThrow(() -> new OrderNotFoundException("No orders found")));
         }
         if (orderRequestDto.getProductId() != null) {
             order.setProduct(productRepository.findProductById(orderRequestDto.getProductId()));

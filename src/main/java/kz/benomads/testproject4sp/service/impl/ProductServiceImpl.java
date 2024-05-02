@@ -15,6 +15,9 @@ import kz.benomads.testproject4sp.model.Product;
 import kz.benomads.testproject4sp.model.UserEntity;
 import kz.benomads.testproject4sp.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,10 +41,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponseDto createProduct(ProductRequestDto productRequestDto, Long userId) {
-        validateInput(productRequestDto, userId);
+    public ProductResponseDto createProduct(ProductRequestDto productRequestDto) {
+        String currentUserName = getCurrentUserName();
+        validateInput(productRequestDto, currentUserName);
 
-        UserEntity user = findUserById(userId);
+        UserEntity user = findUserByUsername(currentUserName);
 
         List<Category> validCategories = checkCategories(productRequestDto.getCategory());
 
@@ -54,16 +58,25 @@ public class ProductServiceImpl implements ProductService {
         return productDtoMapper.apply(savedProduct);
     }
 
-    private void validateInput(ProductRequestDto productRequestDto, Long userId) {
-        if (productRequestDto == null || userId == null) {
-            throw new NullValueException("ProductResponseDto or User Id cannot be null");
+    private String getCurrentUserName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = "";
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            currentUserName = authentication.getName();
+        }
+        return currentUserName;
+    }
+
+    private void validateInput(ProductRequestDto productRequestDto, String userName) {
+        if (productRequestDto == null || userName == null) {
+            throw new NullValueException("ProductResponseDto or Username cannot be null");
         }
     }
 
-    private UserEntity findUserById(Long userId) {
-        return userRepository.findById(userId)
+    private UserEntity findUserByUsername(String userName) {
+        return userRepository.findAllByUsername((userName))
             .orElseThrow(() -> new UserNotFoundException(
-                String.format("User id=%d not found", userId)));
+                String.format("User %s not found", userName)));
     }
 
     private List<Category> checkCategories(List<CategoryDto> categories) {

@@ -33,7 +33,6 @@ public class ProductRequestDto {
 
     private List<CategoryDto> category;
 
-    @NotNull(message = "User ID is required")
-    private Long usersId;
+
 
 }

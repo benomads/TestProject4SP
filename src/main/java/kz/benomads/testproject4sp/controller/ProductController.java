@@ -23,7 +23,6 @@ public class ProductController {
         this.productService = productService;
     }
 
-    //TODO: Implement the rest of the CRUD operations for the Product entity
 
     @GetMapping
     public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
@@ -43,13 +42,12 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductsByCategory(category));
     }
 
-    @PostMapping("/{userId}")
+    @PostMapping
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     public ResponseEntity<ProductResponseDto> createProduct(
-        @PathVariable Long userId,
         @RequestBody ProductRequestDto productRequestDto) {
-        ProductResponseDto product = productService.createProduct(productRequestDto,userId);
 
+        ProductResponseDto product = productService.createProduct(productRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(product);

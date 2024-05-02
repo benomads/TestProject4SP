@@ -14,8 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class OrderRequestDto {
-    @NotNull(message = "User ID is required")
-    private Long userId;
 
     @NotNull(message = "Product ID is required")
     private Long productId;

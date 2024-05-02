@@ -3,7 +3,6 @@ package kz.benomads.testproject4sp.service;
 import kz.benomads.testproject4sp.dto.CategoryDto;
 import kz.benomads.testproject4sp.dto.ProductRequestDto;
 import kz.benomads.testproject4sp.dto.ProductResponseDto;
-import kz.benomads.testproject4sp.model.Category;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.List;
 @Service
 public interface ProductService {
 
-    ProductResponseDto createProduct(ProductRequestDto productRequestDto, Long userId);
+    ProductResponseDto createProduct(ProductRequestDto productRequestDto);
     ProductResponseDto getProductById(Long id);
     List<ProductResponseDto> getAllProducts();
 
