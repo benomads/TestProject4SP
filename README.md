@@ -9,6 +9,8 @@ This is a Spring Boot application developed by `benomads`. The application provi
 - PostgreSQL 15
 - Spring Boot 3.2.5
 - Maven 3.9.3
+- Docker
+- FlyWay
 
 
 ## Features
@@ -87,6 +89,14 @@ The application will start running at `http://localhost:8080`.
 - POST `/api/v1/news`: Create a new news. Access: 'ADMIN' or 'USER' authority.
 - PUT `/api/v1/news/{id}`: Update a specific news by its ID. Access: 'ADMIN' or 'USER' authority.
 - DELETE `/api/v1/news/{id}`: Delete a specific news by its ID. Access: 'ADMIN' authority.
+
+## Docker
+
+You can also run this project as a Docker container. First, pull the Docker image from the repository:
+
+```bash
+docker pull benomads/test-project-4-sp
+```
 
 ## Contributing
 
