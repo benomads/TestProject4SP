@@ -1,7 +1,9 @@
 
 # TestProject4SP
 
-This is a Spring Boot application developed by `benomads`. The application provides authentication services, including user registration and login.
+This is a Spring Boot application developed by `benomads`. It offers a suite of authentication services, encompassing functionalities such as user registration and login. The application also provides comprehensive management systems for users, products, orders, and news.
+
+## Features
 
 ## Technologies Used
 
