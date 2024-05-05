@@ -73,6 +73,11 @@ public class AuthServiceImpl implements AuthService {
                 String
                     .format("Login username=%s already exists", userRegisterDto.getUsername()));
         }
+        if (userRepository.existsByEmail(userRegisterDto.getEmail())) {
+            throw new UserAlreadyExistsException(
+                String
+                    .format("Email=%s already exists", userRegisterDto.getEmail()));
+        }
         if (!Objects.equals(userRegisterDto.getPassword(),
             userRegisterDto.getMatchingPassword())) {
             throw new IllegalArgumentException("Passwords do not match");
