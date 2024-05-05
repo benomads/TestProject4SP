@@ -46,7 +46,36 @@ mvn spring-boot:run
 The application will start running at `http://localhost:8080`.
 
 ## API Endpoints
-
+AuthController
+POST /api/v1/auth/login  
+Description: Login user by username and password
+Request body: UserLoginDto object
+Response: Redirects to the user's profile
+POST /api/v1/auth/register  
+Description: Register user by full name, username, password, avatar URL, email, and phone number
+Request body: UserRegisterDto object
+Response: UserDto object representing the newly created user, with a status of HttpStatus.CREATED
+NewsController
+GET /api/v1/news  
+Description: Get all news
+Response: List of NewsDto objects, with a status of HttpStatus.OK
+GET /api/v1/news/{id}  
+Description: Get a specific news item by its ID
+Response: NewsDto object, with a status of HttpStatus.OK
+POST /api/v1/news  
+Description: Create a new news item
+Request body: NewsDto object
+Response: NewsDto object representing the newly created news item, with a status of HttpStatus.CREATED
+Access: 'ADMIN' or 'USER' authority
+PUT /api/v1/news/{id}  
+Description: Update a specific news item by its ID
+Request body: NewsDto object
+Response: NewsDto object representing the updated news item, with a status of HttpStatus.OK
+Access: 'ADMIN' or 'USER' authority
+DELETE /api/v1/news/{id}  
+Description: Delete a specific news item by its ID
+Response: Status of HttpStatus.NO_CONTENT
+Access: 'ADMIN' authority
 - POST `/api/v1/auth/login`: Login a user.
 - POST `/api/v1/auth/register`: Register a new user.
 
