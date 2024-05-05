@@ -1,5 +1,4 @@
 
-```markdown
 # TestProject4SP
 
 This is a Spring Boot application developed by `benomads`. The application provides authentication services, including user registration and login.
@@ -58,6 +57,6 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
-```
+
 
 Remember to replace the repository URL in the `git clone` command with the actual URL of your repository.
