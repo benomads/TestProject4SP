@@ -90,6 +90,14 @@ The application will start running at `http://localhost:8080`.
 - PUT `/api/v1/news/{id}`: Update a specific news by its ID. Access: 'ADMIN' or 'USER' authority.
 - DELETE `/api/v1/news/{id}`: Delete a specific news by its ID. Access: 'ADMIN' authority.
 
+## API Documentation
+
+This project uses Swagger UI for API documentation and testing. Once the application is running, you can access the Swagger UI at:
+
+```bash
+http://localhost:8080/swagger-ui.html
+```
+
 ## Docker
 
 You can also run this project as a Docker container. First, pull the Docker image from the repository:
