@@ -1,5 +1,7 @@
 package kz.benomads.testproject4sp.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import kz.benomads.testproject4sp.dto.UserDto;
 import kz.benomads.testproject4sp.dto.UserLoginDto;
 import kz.benomads.testproject4sp.dto.UserRegisterDto;
@@ -24,15 +26,18 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Operation(summary = "Login user",
+               description = "Login user by username and password")
     @PostMapping("/login")
     public RedirectView login(@RequestBody UserLoginDto userLoginDto) {
         UserDto userDto = authService.login(userLoginDto);
-//     return ResponseEntity.ok(userDto);
         return new RedirectView("/api/v1/users" + "/" + userDto.getId());
     }
 
+    @Operation(summary = "Register user",
+               description = "Register user by full name, username, password, avatar URL, email, and phone number")
     @PostMapping("/register")
-    public ResponseEntity<UserDto> register(@RequestBody UserRegisterDto userRegisterDto) {
+    public ResponseEntity<UserDto> register(@Valid @RequestBody UserRegisterDto userRegisterDto) {
         UserDto userDto = authService.register(userRegisterDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(userDto);
     }

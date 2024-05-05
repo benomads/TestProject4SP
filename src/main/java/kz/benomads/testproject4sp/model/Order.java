@@ -6,6 +6,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import kz.benomads.testproject4sp.validation.PhoneNumber;
 import lombok.*;
 
 
@@ -28,7 +29,7 @@ public class Order extends BaseEntity {
 
     @NotNull(message = "Quantity is required")
     @Min(value = 1, message = "Quantity must be greater than or equal to 1")
-    private int quantity;
+    private Integer quantity;
 
     @NotNull(message = "Total price is required")
     @Min(value = 0, message = "Total price must be greater than or equal to 0")
@@ -38,6 +39,7 @@ public class Order extends BaseEntity {
     private String address;
 
     @NotBlank(message = "Phone number is required")
+    @PhoneNumber
     private String phoneNumber;
 
 }

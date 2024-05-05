@@ -1,5 +1,8 @@
 package kz.benomads.testproject4sp.repository;
 
+import jakarta.validation.constraints.NotNull;
+import kz.benomads.testproject4sp.dto.CategoryDto;
+import kz.benomads.testproject4sp.dto.ProductResponseDto;
 import kz.benomads.testproject4sp.model.Category;
 import kz.benomads.testproject4sp.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +17,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Product findProductById(Long productId);
 
-    List<Product> findAllProductsByCategory(Category category);
+    List<Product> findAllProductsByCategory(@NotNull(message = "Category is required") List<Category> category);
 }

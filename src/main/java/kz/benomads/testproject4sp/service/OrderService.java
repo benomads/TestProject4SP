@@ -1,7 +1,8 @@
 package kz.benomads.testproject4sp.service;
 
-import kz.benomads.testproject4sp.dto.OrderDto;
-import kz.benomads.testproject4sp.model.Category;
+import kz.benomads.testproject4sp.dto.CategoryDto;
+import kz.benomads.testproject4sp.dto.OrderRequestDto;
+import kz.benomads.testproject4sp.dto.OrderResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,13 +10,13 @@ import java.util.List;
 @Service
 public interface OrderService {
 
-    OrderDto createOrder(OrderDto orderDto);
-    OrderDto getOrderById(Long id);
-    List<OrderDto> getAllOrders();
-    List<OrderDto> getOrdersByCategory(Category category);
-    OrderDto updateOrder(Long id, OrderDto orderDto);
+    OrderResponseDto createOrder(OrderRequestDto orderRequestDto);
+    OrderResponseDto getOrderById(Long id);
+    List<OrderResponseDto> getAllOrders();
+    List<OrderResponseDto> getOrdersByCategory(CategoryDto category);
+    OrderResponseDto updateOrder(Long id, OrderRequestDto orderRequestDto);
 
     void deleteOrder(Long id);
 
-    List<OrderDto> getOrdersByUserId(Long userId);
+    List<OrderResponseDto> getOrdersByUserId(Long userId);
 }
