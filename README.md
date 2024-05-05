@@ -6,10 +6,10 @@ This is a Spring Boot application developed by `benomads`. The application provi
 
 ## Technologies Used
 
-- Java
-- SQL
-- Spring Boot
-- Maven
+- Java 17
+- PostgreSQL 15
+- Spring Boot 3.2.5
+- Maven 3.9.3
 
 ## Features
 
