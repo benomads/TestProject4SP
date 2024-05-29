@@ -86,7 +86,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiException, HttpStatus.UNAUTHORIZED);
     }
 
-    //TODO update ApiException, modify the response body
+    //TODO update ApiException, modify the response body, update
     @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
     public ResponseEntity<Object> customValidationErrorHandling(MethodArgumentNotValidException ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();
